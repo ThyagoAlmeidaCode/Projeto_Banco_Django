@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView,CreateView,UpdateView,DeleteView #Listview - Lista os dados a partir de uma classe
+from django.views.generic import ListView,CreateView,UpdateView,DeleteView,View #Listview - Lista os dados a partir de uma classe
 from django.urls import reverse_lazy #O reverse_lazy redireciona para uma pagina
 #Os arquivos precisam se conhecer
 from .models import Cliente
@@ -54,3 +54,34 @@ class Deletar(DeleteView):
     model = Cliente
     template_name = 'clientes/delete_cliente.html'
     success_url = reverse_lazy('lista_cliente')
+
+
+#Trabalhando com sessoes
+class BuscaCliente(View):
+    #metodo que renderiza nosso formulario de autenticação
+    def get(self, request):
+        return render(request, 'clientes/cliente_busca_form.html')
+    
+    #A partir daqui vamos:
+    #Identificar o email e o cpf do formulario, 
+    #identificar o cliente e criar a sessao
+    def post(self, request):
+        email = request.POST.get('email')#Guada email digitado no formulario
+        cpf = request.POST.get('cpf')#Guarda cpf digitado no formulario
+
+        if email and cpf: #verifica se o email e cpf existem
+            #Guada as informações dos clientes (nosso_cliente)
+            nosso_cliente = Cliente.objects.filter(email=email, cpf=cpf).first() #Pega o primerio cliente com o email e cpf
+            if nosso_cliente: 
+                #Vamos criar as sessoes
+                request.session['nome_cliente'] = nosso_cliente.nome
+                request.session['sobrenome_cliente'] = nosso_cliente.sobrenome
+                titulo = 'Cliente encontrado!'
+                return render(request, 'clientes/cliente_busca_form.html',{'cliente':nosso_cliente, 'title':titulo})
+
+            else: 
+                erro_message = "Nenhum cliente encontrado."
+                return render(request, 'clientes/cliente_busca_form.html', {'mensagem':erro_message})
+        else: 
+            erro_message = "Por favor, informe um email e cpf para consulta"
+            return render(request, 'clientes/cliente_busca_form.html', {'mensagem':erro_message})
