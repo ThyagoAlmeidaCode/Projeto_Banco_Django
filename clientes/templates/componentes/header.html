@@ -7,7 +7,7 @@
         <p>
             Seja Bem  Vindo! 
             {{ request.session.nome_cliente }} {{  request.session.sobrenome_cliente }}
-            <a href="">Sair</a>        
+            <a href="{% url 'cliente_sair' %}">Sair</a>        
         </p>
     {% endif %}
 </section>

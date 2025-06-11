@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container">
         <h1>Informe suas Credenciais</h1>
-        <form action="" method="post">
+        <form action="{% url 'busca_cliente'  %}" method="post">
             {% csrf_token %} <!-- Criptografa os dados do formulario -->
             <input type="email" name="email" placeholder="email@email.com">
             <input type="text" name="cpf" placeholder="Informe o cpf">
